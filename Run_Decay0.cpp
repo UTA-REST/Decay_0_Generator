@@ -1,64 +1,62 @@
 #include <iostream>
-#include <fstream>
-#include <string>
-#include <vector>
-#include <sstream>
-#include <fstream>
-#include <vector>
-#include <string>
+//#include <string>
+//#include <vector>
+//#include <sstream>
+//#include <fstream>
 #include <gsl/gsl_integration.h>
-
 #include "decay0.h"
 
 //g++ -std=c++11 *.cpp -o Run_Decay0 -lgsl
 int main () 
 {
-    decay0 *_decay0;
-    int _Xe136DecayMode; // See method printDecayModeList  Default is 1
-    int _Ba136FinalState;
-    double _energyThreshold;
-
-    _decay0 = 0;
-    _energyThreshold = 0.;
-
-    _Ba136FinalState = 0;
     // Decay0 interface for BB decays ... (BB0nu: DecayMode 1), (BB2nu: DecayMode 4)  
-    _Xe136DecayMode = 1;
+    int _Xe136DecayMode = 4;
+    int _Ba136FinalState = 0;
 
-    std::cout<< "it lives" << std::endl;
+    decay0 *_decay0;
+    _decay0 = 0;
+
     const std::string XeName("Xe136");
-    std::cout<< XeName << std::endl;
 
     _decay0 = new decay0(XeName, _Ba136FinalState, _Xe136DecayMode);
 
     std::vector<decay0Part> theParts;
     _decay0->decay0DoIt(theParts);
 
-    std::cout << "PDG" << " " << "Energy" << " " << "time" << " " << "Mom_x?" << " " << "Mom_y?" << " " << "Mom_z?" << std::endl;
-
+    std::cout << "\n" << "PDG" << " " << "Energy" << " " << "time" << " " << "Mom_x?" << " " << "Mom_y?" << " " << "Mom_z?" << std::endl;
     for(std::vector<decay0Part>::const_iterator itp = theParts.begin(); itp != theParts.end(); itp++) 
     {
        std::cout << itp->_pdgCode << " " << itp->_energy << " " << itp->_time << " " << itp->_pmom[0] \
        << " " << itp->_pmom[1] << " " << itp->_pmom[2] << std::endl;
     }
 
-
+    // this prints the presets in the generator
+    // seems kinda useless
     //_decay0->printDecayModeList();
 
-    /* for(int i=1; i<=10; i++)
+
+    //used this to make the output file. this thing is kinda slow...
+    // took nearly an hour for 100,000
+    /* double Total_energy=0.0;
+    std::ofstream myfile ("bb2nu_energy.txt");
+    for(int i=1; i<=1000000; i++)
     {
+        std::cout<< i << std::endl;
         _decay0 = new decay0(XeName, _Ba136FinalState, _Xe136DecayMode);
         std::vector<decay0Part> theParts;
         _decay0->decay0DoIt(theParts);
 
         for(std::vector<decay0Part>::const_iterator itp = theParts.begin(); itp != theParts.end(); itp++) 
         {
-        std::cout << itp->_pdgCode << " " << itp->_energy << " " << itp->_time << " " << itp->_pmom[0] \
+        //std::cout << itp->_pdgCode << " " << itp->_energy << " " << itp->_time << " " << itp->_pmom[0] \
         << " " << itp->_pmom[1] << " " << itp->_pmom[2] << std::endl;
+            Total_energy+=itp->_energy;
         }
-
-
-    } */
+        myfile << Total_energy;
+        myfile << "\n";
+        Total_energy = 0.0;
+    }
+    myfile.close(); */
 
     return 0;
 }

@@ -39,7 +39,7 @@ double RandomNormal(double m, double s)	/* normal random variate generator */
 }
 
 
-inline void RndmDirection(double& dx, double& dy, double& dz, const double length = 1.) 
+/* inline void RndmDirection(double& dx, double& dy, double& dz, const double length = 1.) 
 {
     const double phi = TwoPi * RandomUniform();
     const double ctheta = 2 * RandomUniform() - 1.;
@@ -47,7 +47,7 @@ inline void RndmDirection(double& dx, double& dy, double& dz, const double lengt
     dx = length * cos(phi) * stheta;
     dy = length * sin(phi) * stheta;
     dz = length * ctheta;
-}
+} */
 
 
 double lngamma(const double xx) 

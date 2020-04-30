@@ -4,11 +4,20 @@
 #include <cfloat>
 #include <complex>
 #include "decay0.h"
-#include <G4RandomDirection.hh>
-#include <Randomize.hh>
+//#include <G4RandomDirection.hh>
+//#include <Randomize.hh>
 #include <gsl/gsl_integration.h>
 #include <gsl/gsl_sf_gamma.h>
 #include <gsl/gsl_errno.h>
+
+#include <iostream>
+#include <fstream>
+#include <string>
+#include <vector>
+#include <sstream>
+
+#include "Random.h"
+
 //
 // Global variables used in the function, that are in global space, as they are used in integrations. 
 //
@@ -380,7 +389,7 @@ void decay0::decay0DoIt(std::vector<decay0Part> &outPart) const {
   if (_nuclideName == std::string("Xe136")) this->Ba136low(outPart);
 //  if (_nuclideName == std::string("Te130")) this->Xe130low(outPart);
 } 
-  
+
 void decay0::decay0DoItbb(std::vector<decay0Part> &outPart) const {
   // 
   // subroutnie bb starts here.. 
@@ -422,12 +431,12 @@ void decay0::decay0DoItbb(std::vector<decay0Part> &outPart) const {
   int numThrow = 0;
 //  std::cerr << " ebb1 " << _ebb1  <<  " ebb2 " << _ebb2 << std::endl;
   while(true) {
-     if (_modebb != 10) _e1 = _ebb2*G4UniformRand();
-     else _e1 = _ebb1 + (_ebb2 - _ebb1)*G4UniformRand();
+     if (_modebb != 10) _e1 = _ebb2*RandomUniform();
+     else _e1 = _ebb1 + (_ebb2 - _ebb1)*RandomUniform();
 //     if ((_e0 - _e1) < 0.) continue; //not needed if energy range are set properly. 
      const size_t k = static_cast<size_t>(static_cast<int>(_e1*1000.) - 1);
      if (k >= _spthe1.size()) continue;
-     if(_spmax*G4UniformRand() < _spthe1[k]) break;
+     if(_spmax*RandomUniform() < _spthe1[k]) break;
      numThrow++;
      if (numThrow%1000 == 0) std::cerr << " Thrwing e1 ... " << numThrow << " times ... " << std::endl;
   }
@@ -479,7 +488,7 @@ void decay0::decay0DoItbb(std::vector<decay0Part> &outPart) const {
 // sampling the energies: second e-/e+ Acceptance/rejection method (Von Neumann), again  
 //
         while(true) {
-	 e2 = re2s + (re2f-re2s)*G4UniformRand();
+	 e2 = re2s + (re2f-re2s)*RandomUniform();
 	 double fe2=0.;
 	 switch(_modebb) {
 	   case 4 :
@@ -501,7 +510,7 @@ void decay0::decay0DoItbb(std::vector<decay0Part> &outPart) const {
 	   default :
 	     fe2 = 0.; break;
 	 }
-	 if ( f2max*G4UniformRand() < fe2) break;
+	 if ( f2max*RandomUniform() < fe2) break;
         }
       } else if( _modebb == 10) {
 // energy of X-ray is fixed; no angular correlation
@@ -575,14 +584,14 @@ void decay0::decay0DoItbb(std::vector<decay0Part> &outPart) const {
       double ctet2 = 1.0; double stet2 = 0.0; 
       numThrow = 0;
       while(true) {
-	  phi1 = twopi * G4UniformRand();
-	  ctet1 = 1. - 2.* G4UniformRand();
+	  phi1 = twopi * RandomUniform();
+	  ctet1 = 1. - 2.* RandomUniform();
 	  stet1 = std::sqrt(1. - ctet1*ctet1);
-	  phi2= twopi * G4UniformRand();
-	  ctet2 = 1. - 2.*G4UniformRand();
+	  phi2= twopi * RandomUniform();
+	  ctet2 = 1. - 2.*RandomUniform();
 	  stet2=std::sqrt(1. - ctet2*ctet2);
 	  const double ctet = ctet1*ctet2 + stet1*stet2*std::cos(phi1-phi2);
-	  if((romaxt*G4UniformRand()) < (a + b*ctet + c*ctet*ctet)) break;
+	  if((romaxt*RandomUniform()) < (a + b*ctet + c*ctet*ctet)) break;
 	  numThrow++;
 	  if (numThrow%10000 == 0) {
 	     std::cerr << " Angular distribution Von Neumann accp/rej numThrow " << numThrow << std::endl;
@@ -648,7 +657,7 @@ void decay0::Ba136low(std::vector<decay0Part> &outPart) const {   // Baryum 136 
 	this->nucltransK(outPart, 0.819,0.037,2.9e-3,0.,tclev,thlev) ;
 	break;
      case 2223:
-        p = 100.0*G4UniformRand();
+        p = 100.0*RandomUniform();
 	if (p <= 4.3) {
 	  this->nucltransK(outPart, 2.223,0.037,7.8e-4,4.0e-4,tclev,thlev) ;
 	  return;
@@ -659,7 +668,7 @@ void decay0::Ba136low(std::vector<decay0Part> &outPart) const {   // Baryum 136 
 	} else { 
 	  this->nucltransK(outPart, 0.672,0.037,6.5e-3,0.,tclev,thlev) ; 
 	  thlev=1.01e-12; 
-	  p = 100.0*G4UniformRand();
+	  p = 100.0*RandomUniform();
 	  if (p < 52.1) this->nucltransK(outPart, 1.551,0.037,8.4e-4,9.7e-5,tclev,thlev) ;
 	  else nucltransK(outPart, 0.733,0.037,4.5e-3,0.,tclev,thlev) ;
 	}
@@ -671,7 +680,7 @@ void decay0::Ba136low(std::vector<decay0Part> &outPart) const {   // Baryum 136 
 	break;
      case 2129:
        thlev=0.051e-12;
-       p = 100.0*G4UniformRand();
+       p = 100.0*RandomUniform();
        if (p < 33.3) this->nucltransK(outPart, 2.129,0.037,7.7e-4,3.6e-4,tclev,thlev) ;
        else {
           this->nucltransK(outPart, 1.310,0.037,1.4e-3,2.3e-5,tclev,thlev) ;
@@ -681,7 +690,7 @@ void decay0::Ba136low(std::vector<decay0Part> &outPart) const {   // Baryum 136 
        break;
      case 2080:
         thlev=0.6e-12;
-        p = 100.0*G4UniformRand();
+        p = 100.0*RandomUniform();
         if (p < 35.4) {
 	  this->nucltransK(outPart, 2.080,0.037,7.6e-4,3.3e-4,tclev,thlev) ;
 	  return;
@@ -692,7 +701,7 @@ void decay0::Ba136low(std::vector<decay0Part> &outPart) const {   // Baryum 136 
 	} else {
 	  this->nucltransK(outPart, 0.529,0.037,1.0e-2,0.,tclev,thlev) ;
 	   thlev=1.01e-12;
-           p = 100.0*G4UniformRand();
+           p = 100.0*RandomUniform();
 	   if(p < 52.1) { 
 	    this->nucltransK(outPart, 1.551,0.037,8.4e-4,9.7e-5,tclev,thlev) ;
 	    return;
@@ -709,7 +718,7 @@ void decay0::Ba136low(std::vector<decay0Part> &outPart) const {   // Baryum 136 
 	 break;
      case 1551:
  	  thlev=1.01e-12;
-          p = 100.0*G4UniformRand();
+          p = 100.0*RandomUniform();
 	   if(p < 52.1) { 
 	    this->nucltransK(outPart, 1.551,0.037,8.4e-4,9.7e-5,tclev,thlev) ;
 	    return;
@@ -750,7 +759,7 @@ void decay0::nucltransK(std::vector<decay0Part> &outPart, const double Egamma, c
 //		  emitted (sec);
 //	 thlev  - level halflife (sec).
 
-   const double p=(1.+ conve + convp)*G4UniformRand();
+   const double p=(1.+ conve + convp)*RandomUniform();
    if (p < 1.) this->outGamma(outPart, Egamma,tclev,thlev);
    else if (p < (1.+conve) ) {
      this->outElectron(outPart, Egamma-Ebinde, tclev, thlev);
@@ -783,8 +792,8 @@ void decay0::outPair(std::vector<decay0Part> &outPart, const double ePair, const
 // 	  tclev - time of creation of level from which pair will be
 //		  emitted (sec);
 //
-     const double phi =2.*M_PI*G4UniformRand();
-     const double ctet = -1.+ 2.*G4UniformRand();
+     const double phi =2.*M_PI*RandomUniform();
+     const double ctet = -1.+ 2.*RandomUniform();
      const double teta=std::acos(ctet);
      const double e=0.5*ePair;
      this->timedParticle(outPart, 2,e,e,teta,teta,phi,phi,tclev, thlev);
@@ -822,19 +831,19 @@ double decay0::timedParticle (std::vector<decay0Part> &outPart, int np, const do
        std::cerr << " decay0::timedParticle Unrecognized particle, nothing stored.. " << std::endl;
        return 0.; 
    }
-   const double phi = phi1 + (phi2 - phi1)*G4UniformRand();
+   const double phi = phi1 + (phi2 - phi1)*RandomUniform();
    const double ctet1 = std::cos(teta1);
    const double ctet2 = std::cos(teta2);
-   const double ctet =  ctet1 + (ctet2 - ctet1)*G4UniformRand();
+   const double ctet =  ctet1 + (ctet2 - ctet1)*RandomUniform();
    const double stet = std::sqrt(1.0 - ctet*ctet);
    aP._energy = E1;
-   if (std::abs(E2 - E1) > 1.0e-10) aP._energy = E1 + (E2-E1)*G4UniformRand();   
+   if (std::abs(E2 - E1) > 1.0e-10) aP._energy = E1 + (E2-E1)*RandomUniform();   
    const double p = std::sqrt(aP._energy * (aP._energy + 2.*pMass));
    aP._pmom[0] = p*stet*std::cos(phi);
    aP._pmom[1] = p*stet*std::sin(phi);
    aP._pmom[2] = p*ctet;
    double t = tclev;
-   if (thlev > 1.0e-100) t = tclev - thlev/std::log(2.0) * std::log(G4UniformRand());
+   if (thlev > 1.0e-100) t = tclev - thlev/std::log(2.0) * std::log(RandomUniform());
    aP._time = t;
    outPart.push_back(aP);
    return t;	     

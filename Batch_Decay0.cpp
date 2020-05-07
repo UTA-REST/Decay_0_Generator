@@ -35,7 +35,7 @@ int main (int argc, char **argv)
     // took nearly an hour for 100,000
     double Total_energy=0.0;
     std::ofstream myfile (argv[1]);
-    for(int i=1; i<=100; i++)
+    for(int i=1; i<=10000; i++)
     {
         std::cout<< i << std::endl;
         _decay0 = new decay0(XeName, _Ba136FinalState, _Xe136DecayMode);

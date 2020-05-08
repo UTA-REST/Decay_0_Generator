@@ -5,11 +5,15 @@
 //#include <fstream>
 #include <gsl/gsl_integration.h>
 #include "decay0.h"
-//g++ -std=c++11 *.cpp -o Run_Decay0 -lgsl
-//g++ -std=c++11 Random.cpp XorShift256.cpp decay0.cpp Batch_Decay0.cpp -o Batch_Decay0 -lgsl
+#include "Random.h"
+#include <cstdlib>
+
+//g++ -std=c++17 Random.cpp decay0.cpp Batch_Decay0.cpp -o Batch_Decay0 -lgsl
 
 int main (int argc, char **argv) 
 {
+    std::uint64_t Seed = atoi(argv[1]);
+    Random_Set_Seed(Seed);
     // Decay0 interface for BB decays ... (BB0nu: DecayMode 1), (BB2nu: DecayMode 4)  
     int _Xe136DecayMode = 4;
     int _Ba136FinalState = 0;
@@ -34,8 +38,8 @@ int main (int argc, char **argv)
     //used this to make the output file. this thing is kinda slow...
     // took nearly an hour for 100,000
     double Total_energy=0.0;
-    std::ofstream myfile (argv[1]);
-    for(int i=1; i<=10000; i++)
+    std::ofstream myfile (argv[2]);
+    for(int i=1; i<=3; i++)
     {
         std::cout<< i << std::endl;
         _decay0 = new decay0(XeName, _Ba136FinalState, _Xe136DecayMode);

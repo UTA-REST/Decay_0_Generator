@@ -5,11 +5,16 @@
 //#include <fstream>
 #include <gsl/gsl_integration.h>
 #include "decay0.h"
-//g++ -std=c++11 *.cpp -o Run_Decay0 -lgsl
-//g++ -std=c++11 Random.cpp XorShift256.cpp decay0.cpp Run_Decay0.cpp -o Run_Decay0 -lgsl
+#include "Random.h"
+
+//g++ -std=c++17 Random.cpp decay0.cpp Run_Decay0.cpp -o Run_Decay0 -lgsl
 
 int main () 
 {
+    // changing the seed for the random numbergenerator 
+    constexpr std::uint64_t Seed = 777;
+    Random_Set_Seed(Seed);
+
     // Decay0 interface for BB decays ... (BB0nu: DecayMode 1), (BB2nu: DecayMode 4)  
     int _Xe136DecayMode = 4;
     int _Ba136FinalState = 0;

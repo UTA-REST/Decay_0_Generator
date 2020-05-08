@@ -295,11 +295,12 @@ void decay0::initSpectrum() {
 //	do i=int(e0*1000.)+1,4300
 //	   spthe1(i)=0.
 //	enddo
-   std::ofstream fOut("./th-e1-spectrum.dat"); 
+	//AUSTIN KILLED THIS 
+   /* std::ofstream fOut("./th-e1-spectrum.dat"); 
    fOut << " i  s " << std::endl;
    for (size_t i=0; i != _spthe1.size(); i++)  
 	   fOut << " " << i << " " << _spthe1[i] << std::endl;
-   fOut.close();
+   fOut.close(); */
 	
    _toallevents=1.;
 	// Using 

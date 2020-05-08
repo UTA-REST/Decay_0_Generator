@@ -1,13 +1,21 @@
-#include "XorShift256.h"
+//#include "XorShift256.h"
 #include <math.h>
 #include <cmath>
 #include <vector>
 
+#include "Xoshiro_Full.h"
+XoshiroCpp::Xoshiro256Plus rng(XoshiroCpp::DefaultSeed);
 double RandomUniform() 
 {
-    double XorShift  = next();
-    return XorShift; 
+    double out = XoshiroCpp::DoubleFromBits(rng());
+    return out; 
 }
+
+void Random_Set_Seed(std::uint64_t Seed)
+{
+    rng = XoshiroCpp::Xoshiro256Plus(Seed);
+}
+
 
 
 double RandomNormal(double m, double s)	/* normal random variate generator */
